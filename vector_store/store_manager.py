@@ -38,16 +38,25 @@ def embed_and_store(text: str, metadata: dict = None):
     with open(META_PATH, "wb") as f:
         pickle.dump(metadata_store, f)
 
-def search_similar(query: str, top_k: int = 3):
-    global index, metadata_store
-    if index is None:
-        load_vector_store()
+def search_similar(query_text, top_k=3):
+    # Check if the index and metadata exist
+    if not os.path.exists("vector_store/faiss_index") or not os.path.exists("vector_store/metadata.pkl"):
+        print("⚠️ FAISS index or metadata store not found. Skipping search.")
+        return []
 
-    query_vector = get_embedding(query).reshape(1, -1)
-    D, I = index.search(query_vector, top_k)
+    # Load index and metadata
+    index = faiss.read_index("vector_store/faiss_index")
+    with open("vector_store/metadata.pkl", "rb") as f:
+        metadata_store = pickle.load(f)
+
+    # Get embedding
+    query_embedding = get_embedding(query_text)
+    D, I = index.search([query_embedding], top_k)
 
     results = []
     for idx in I[0]:
         if idx < len(metadata_store):
             results.append(metadata_store[idx])
+        else:
+            print(f"⚠️ Index {idx} out of range for metadata store")
     return results
