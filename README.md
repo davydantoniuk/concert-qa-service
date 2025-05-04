@@ -1,4 +1,4 @@
-# Concert Tour Assistant – Summary
+# Concert Tour Assistant
 
 Smart AI assistant that helps users ingest concert tour documents and ask questions about 2025–2026 events using a local Retrieval-Augmented Generation (RAG) system. If no answer is found internally, the assistant will automatically search the web to provide a useful response.
 
